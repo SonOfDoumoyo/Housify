@@ -1,0 +1,66 @@
+.bg-opc {
+    background: rgb(74, 222, 128, 0.09)
+}
+
+.bg-sign {
+    background: #ffffff19;
+    border: solid 1px;
+    border-color: #8484843f;
+}
+
+.hero-bg{
+    position: relative;
+    overflow: hidden;
+    color: rgb(30, 20, 56);
+}
+
+.hero-bg::before {
+    background: linear-gradient(135deg, var(--primary-glow), var(--primary-dark));
+    border-radius: 80%40%20%50% / 80%30%50%30%;
+    height: 850px;
+    width: 850px;
+    content: "";
+    position: absolute;
+    background-image: url("../hero_bg_2.webp");
+    background-size: cover;
+    right: -120px;
+    z-index: 10;
+    top: 0%;
+    box-shadow:
+        inset 60px 0 50px rgba(30, 20, 56, 0.95),
+        inset 0 -30px 50px rgba(30, 20, 56, 0.95);
+    mask-image:
+        linear-gradient(
+            to right,
+            transparent 0%,
+            black 15%,
+            black 80%,
+            transparent 100%
+        ),
+        linear-gradient(
+            to bottom,
+            black 0%,
+            black 70%,
+            transparent 100%
+        );
+
+    mask-composite: intersect;
+
+    -webkit-mask-image:
+        linear-gradient(
+            to right,
+            transparent 0%,
+            black 15%,
+            black 80%,
+            transparent 100%
+        ),
+        linear-gradient(
+            to bottom,
+            black 0%,
+            black 70%,
+            transparent 100%
+        );
+
+    -webkit-mask-composite: source-in;
+
+}

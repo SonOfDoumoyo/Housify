@@ -1,0 +1,42 @@
+{
+    "federal_university_of_otuoke":{
+        "latitude":4.797638519345833, 
+        "longitude":6.328745784920405
+    },
+    "azikiel":{
+        "latitude":4.798676118818424,
+        "longitude":6.32089978642533
+    },
+    "otuaba":{
+        "latitude":4.785090550184328,
+        "longitude": 6.3135327622084585
+    },
+    "skills auditorium":{
+        "latitude":4.8017183582233605, 
+        "longitude":6.323557504057505
+    },
+    "tee-jay estate":{
+        "latitude":4.798970785901378,
+        "longitude":6.318827586348647
+    },
+    "olumba":{
+        "latitude":4.7953614587582685, 
+        "longitude":6.319018356712278
+    },
+    "eva glass hotels":{
+        "latitude":4.7976819397902695,
+        "longitude": 6.31992144589949
+    },
+    "after bridge":{
+        "latitude":4.783664387966381, 
+        "longitude":6.304310122186177
+    },
+    "kata kata":{
+        "latitude":4.800820677897196, 
+        "longitude":6.323983472478799
+    },
+    "highness":{
+        "latitude":4.790129441873351, 
+        "longitude":6.3124071001542665
+    }
+}

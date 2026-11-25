@@ -1,0 +1,151 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: grey;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(40px);
+}
+
+.container{
+    background-color: white;
+    width: 277px;
+    padding: 29px;
+    border-radius: 13px;
+
+}
+
+.header{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo{
+    background-color: black;
+    height: fit-content;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.logo>p{
+    margin: 0;
+    color: white;
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+.header>p{
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.container>h2{
+    margin-top: 7px;
+    font-size: 34px;
+    margin-bottom: 0;
+}
+
+.container>p{
+    color: gray;
+    letter-spacing: 1px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 19px;
+    margin-top: 10px;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 35px;
+}
+
+.password-container{
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    justify-content: start;
+    border: 2px solid #8080805e;
+    background-color: #80808057;
+    width: fit-content;
+    border-radius: 10px;
+    padding: 2px 11px 2px 11px;
+    width: 235px;
+}
+
+.password-container.error{
+    border: 2px solid red;
+}
+
+.password-container.success{
+    border: 2px solid green;
+}
+
+.password-container>input{
+    border: none;
+    outline: none;
+    height: fit-content;
+    background-color: transparent;
+    width: 100%;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #080808;
+}
+
+.password-container>p{
+    margin: 3px;
+    font-size: 1.2rem;
+}
+
+label{
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.confirm-cont+input{
+    align-self: start;
+    width: 262px;
+    height: 38px;
+    color: white;
+    background-color: black;
+    border: none;
+    outline: none;
+    border-radius: 9px;
+    font-weight: 400;
+    font-size: 1.2rem;
+}
+
+.confirm-cont ~ p{
+    align-self: center;
+    margin: 0;
+    position: relative;
+    bottom: 19px;
+    color: #575757;
+    font-weight: 500;
+}
+
+.error-message{
+    margin: 2px;
+    font-size: 13px;
+    color: rgba(255, 0, 0, 0.822);
+    text-shadow: -1px 2px 3px rgba(255, 0, 0, 0.507);
+    display: none;
+}
+
+.error-message.show{
+    display: block;
+}
+
+.confirm-cont ~ p:hover,.confirm-cont+input:hover{
+    cursor: pointer;
+}
+
+.password-container>p:hover{
+    cursor: pointer;
+}
