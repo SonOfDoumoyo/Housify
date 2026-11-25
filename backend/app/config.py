@@ -2,7 +2,7 @@ from pydantic_settings import SettingsConfigDict, BaseSettings
 from pathlib import Path
 import secrets
 
-BASE_DIR = Path(__file__).resolve().parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 class Settings(BaseSettings):
@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     MAIL_FROM_NAME: str
     REDIS_HOST: str
     REDIS_PORT: int
+    REDIS_PASSWORD:str
     OpenRouteServiceKey: str
     R2_ACCESS_KEY: str
     R2_SECRET_KEY: str

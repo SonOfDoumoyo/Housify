@@ -8,7 +8,7 @@ from ....config import settings
 JTI_EXPIRY = 3600
 
 # redis_client = aioredis.from_url(url=settings.REDIS_URL, decode_responses=True)
-redis_client = aioredis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db="1")
+redis_client = aioredis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, password=settings.REDIS_PASSWORD,decode_responses=True)
 
 
 async def add_jti_to_blocklist(jti: str) -> None:
