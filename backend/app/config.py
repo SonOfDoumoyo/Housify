@@ -2,7 +2,7 @@ from pydantic_settings import SettingsConfigDict, BaseSettings
 from pathlib import Path
 import secrets
 
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent
 
 
 class Settings(BaseSettings):
@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     COOKIE_SAMESITE: str = "lax"
     COOKIE_DOMAIN: str | None = None
 
-    model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=BASE_DIR.parent / ".env", extra="ignore")
 
 
 settings = Settings()
