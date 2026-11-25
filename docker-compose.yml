@@ -13,7 +13,7 @@ services: #Create the services you want to run together
   backend: #Build them
     build: 
       context: ./backend
-      dockerfile: ./backend/Dockerfile #Build the docker file from the path
+      dockerfile: ./Dockerfile #Build the docker file from the path
     restart: unless-stopped
     ports: #Display the ports
       - "8001:8000"
