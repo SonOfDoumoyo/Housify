@@ -12,7 +12,7 @@ services: #Create the services you want to run together
       - postgres_data:/var/lib/postgresql/data
   backend: #Build them
     build: 
-      context: .
+      context: ./backend
       dockerfile: ./backend/Dockerfile #Build the docker file from the path
     restart: unless-stopped
     ports: #Display the ports
