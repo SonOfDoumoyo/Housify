@@ -1,0 +1,93 @@
+# Housify — full stack with Docker Compose.
+#
+# First run:
+#   1. Copy backend/app/.env.example to backend/app/.env and fill in the
+#      real secrets (JWT secret, Google OAuth, SMTP, Cloudflare R2, ...).
+#      DATABASE_URL, REDIS_HOST, REDIS_PORT and FRONTEND_URL below override
+#      whatever is in that file when running under Compose.
+#   2. docker compose up --build
+#
+# The API is then at http://localhost:8000 (GET /health) and the site at
+# http://localhost:3000.
+#
+# Production (Oracle + Vercel): the frontend is deployed on Vercel, so only
+# db / redis / backend are needed on the server. Override these when you
+# deploy the backend on its own host:
+#   NEXT_PUBLIC_API_BASE_URL=https://<api-domain>/api/v1.0/  (Vercel env var)
+#   FRONTEND_URL=https://<vercel-url>  (in backend/app/.env)
+#   COOKIE_SECURE=true, COOKIE_SAMESITE=none  (in backend/app/.env)
+# and point the Google OAuth redirect URI at https://<api-domain>/api/v1.0/auth/google.
+
+name: housify
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: housify
+      POSTGRES_PASSWORD: housify
+      POSTGRES_DB: housify
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Exposed for local debugging; drop this mapping on a public server.
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U housify -d housify"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - path: ./backend/app/.env
+        required: false
+    environment:
+      DATABASE_URL: postgresql+asyncpg://housify:housify@db:5432/housify
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FRONTEND_URL: http://localhost:3000
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        # Baked into the site at build time; must end with a slash.
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000/api/v1.0/}
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://localhost:8000/api/v1.0/}
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  redisdata:

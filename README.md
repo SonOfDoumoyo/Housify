@@ -17,3 +17,18 @@ Housify by StreixCorp — connect renters with trusted agents and landlords.
   startup, which would otherwise clash with the migrations).
 
 No separate user profile page: account settings live under Settings.
+
+## Run everything with Docker Compose
+
+From this directory:
+
+```sh
+cp backend/app/.env.example backend/app/.env   # then fill in real secrets
+docker compose up --build
+```
+
+The site is at http://localhost:3000 and the API at
+http://localhost:8000 (`GET /health`). The backend container runs
+`alembic upgrade head` before starting, so the database is migrated
+automatically. See the comments at the top of `docker-compose.yml`
+for the production (Oracle + Vercel) overrides.
