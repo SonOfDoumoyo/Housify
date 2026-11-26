@@ -312,7 +312,7 @@ async def verify_account(
     await auth_service.update_user_info(
         user=user, info={"is_verified": True}, session=session
     )
-    login_link = str("http://localhost:5173/sign-in")  # link for sign in page
+    login_link = str(f"{settings.FRONTEND_URL}/sign-in")  # link for sign in page
     return template.TemplateResponse(
         request=request,
         name="email_verified.html",
@@ -345,6 +345,7 @@ async def login_with_google(
 @auth_router.get("/google", name="auth_google")
 async def auth_google(
     request: Request,
+    response_: Response,
     session: AsyncSession = Depends(get_session),
 ):
 
@@ -403,16 +404,8 @@ async def auth_google(
     )
 
     frontend_url = (settings.FRONTEND_URL or "http://localhost:3000").rstrip("/")
-    response = RedirectResponse(
-        url=(
-            f"{frontend_url}/dashboard"
-            if not (is_new_user and carried_role not in {"client", "agent"})
-            else f"{frontend_url}/complete-profile?needs_role=1"
-        )
-    )
-
     max_age = 60 * 60 * 24 * 30 if remember_me else 60 * 60 * 24
-    response.set_cookie(
+    response_.set_cookie(
         key=f"refresh_token",
         value=refresh_token,
         httponly=True,
@@ -423,7 +416,7 @@ async def auth_google(
         max_age=max_age,
     )
 
-    response.set_cookie(
+    response_.set_cookie(
         key=f"access_token",
         value=access_token,
         httponly=True,
@@ -432,6 +425,14 @@ async def auth_google(
         path="/",
         domain=settings.COOKIE_DOMAIN,
     )
+    response = RedirectResponse(
+        url=(
+            f"{frontend_url}/dashboard"
+            if not (is_new_user and carried_role not in {"client", "agent"})
+            else f"{frontend_url}/complete-profile?needs_role=1"
+        )
+    )
+    
     return response
 
 
