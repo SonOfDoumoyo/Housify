@@ -25,7 +25,13 @@ from ..utils.validators import (
     decode_url_safeToken,
 )
 from ..utils.mail import send_email_verification_email, send_password_reset_email
-from ..utils.redis import store_refresh_token, get_refresh_token, store_access_token, del_refresh_token, del_access_token
+from ..utils.redis import (
+    store_refresh_token,
+    get_refresh_token,
+    store_access_token,
+    del_refresh_token,
+    del_access_token,
+)
 from ..utils.paths import template_path
 from app.config import BASE_DIR, settings
 
@@ -55,12 +61,19 @@ async def refresh_access_token(
     if not user:
         raise UserNotFound()
 
-    user_data = {"email": user.email, "user_uid": str(user.uid), "role": user.role, "finger_print":finger_print}
+    user_data = {
+        "email": user.email,
+        "user_uid": str(user.uid),
+        "role": user.role,
+        "finger_print": finger_print,
+    }
     new_access_token, access_payload = create_access_token(user_data=user_data)
     if not new_access_token:
         raise InvalidToken()
 
-    await store_access_token(user_uid=user_uid, value=access_payload, finger_print=finger_print)
+    await store_access_token(
+        user_uid=user_uid, value=access_payload, finger_print=finger_print
+    )
 
     response = JSONResponse(
         content={
@@ -78,21 +91,24 @@ async def refresh_access_token(
         path="/",
         domain=settings.COOKIE_DOMAIN,
     )
-    
+
     return response
 
 
 @auth_router.post("/logout")
-async def log_out(request: Request, response: Response, session: AsyncSession = Depends(get_session), user: UserDataModel = Depends(get_this_user)):
+async def log_out(
+    request: Request,
+    response: Response,
+    session: AsyncSession = Depends(get_session),
+    user: UserDataModel = Depends(get_this_user),
+):
     uid = user.uid
     finger_print = get_device_info(request)
     await del_refresh_token(user_uid=uid, finger_print=finger_print)
     await del_access_token(user_uid=uid, finger_print=finger_print)
 
     response = JSONResponse(
-        content={
-            "message": "Logged out successfully"
-        },
+        content={"message": "Logged out successfully"},
         status_code=status.HTTP_200_OK,
     )
     response.delete_cookie(
@@ -129,20 +145,22 @@ async def login(
     user_with_email = await auth_service.get_email_user(email=email, session=session)
     if user_with_email is None:
         raise UserNotFound()
-    
+
     if user_with_email.hashed_password == None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="This account was created with Google. Please sign in with Google, or reset password to enable email and password login."
+            detail="This account was created with Google. Please sign in with Google, or reset password to enable email and password login.",
         )
 
-    valid_password = verify_password(password=password, hash=user_with_email.hashed_password)
+    valid_password = verify_password(
+        password=password, hash=user_with_email.hashed_password
+    )
     if not valid_password:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Wrong password or email! try again."
+            detail="Wrong password or email! try again.",
         )
-    
+
     finger_print = get_device_info(request)
     existing_device = await get_refresh_token(
         user_uid=user_with_email.uid, finger_print=finger_print
@@ -162,15 +180,14 @@ async def login(
     )
 
     await store_refresh_token(user_uid=jti, value=payload, finger_print=finger_print)
-    await store_access_token(user_uid=jti, value=access_payload, finger_print=finger_print)
+    await store_access_token(
+        user_uid=jti, value=access_payload, finger_print=finger_print
+    )
 
     max_age = 60 * 60 * 24 * 30 if remember_me else 60 * 60 * 24
 
     response = JSONResponse(
-        content={
-            "email": email,
-            "user_uid": str(user_with_email.uid)
-        },
+        content={"email": email, "user_uid": str(user_with_email.uid)},
         status_code=status.HTTP_200_OK,
     )
 
@@ -207,7 +224,10 @@ async def create_an_account(
 ):
 
     if signup_data.role not in {UserRole.CLIENT, UserRole.AGENT, UserRole.LANDLORD}:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="This account role cannot be self-assigned")
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This account role cannot be self-assigned",
+        )
 
     existing_user = await auth_service.get_email_user(
         email=signup_data.email, session=session
@@ -285,14 +305,14 @@ async def verify_account(
         )
     email = token_data["email"]
     user = await auth_service.get_email_user(email=email, session=session)
-    
+
     if not user:
         raise UserNotFound()
-    
+
     await auth_service.update_user_info(
         user=user, info={"is_verified": True}, session=session
     )
-    login_link = str("http://localhost:5173/sign-in") #link for sign in page
+    login_link = str("http://localhost:5173/sign-in")  # link for sign in page
     return template.TemplateResponse(
         request=request,
         name="email_verified.html",
@@ -314,9 +334,10 @@ async def login_with_google(
     # back in the callback below.
     request.session["role"] = role if role in {"client", "agent"} else None
     request.session["flow"] = flow if flow in {"signup", "signin"} else None
-    redirect_url = request.url_for(
-        "auth_google"
-    )  # Acts as a callback url for google to redirect to after successful authentication
+    redirect_url = "https://housifyapp.duckdns.org/api/v1.0/auth/google"  # Acts as a callback url for google to redirect to after successful authentication
+    # redirect_url = request.url_for(
+    #     "auth_google"
+    # )  # Acts as a callback url for google to redirect to after successful authentication
     # Also url_for is used to generate the absolute url for the auth_google endpoint which is required by google for redirection after authentication
     return await oauth.google.authorize_redirect(request, redirect_url)
 
@@ -344,7 +365,12 @@ async def auth_google(
     is_new_user = added_user is None
     if is_new_user:
         """if user doesnt exists user is added to the database"""
-        signup_data = {"fullname": name, "email": email, "hashed_password": None, "is_verified": True}
+        signup_data = {
+            "fullname": name,
+            "email": email,
+            "hashed_password": None,
+            "is_verified": True,
+        }
         if user_info.get("picture"):
             signup_data["profile_image"] = user_info["picture"][:250]
         if carried_role in {"client", "agent"}:
@@ -367,18 +393,22 @@ async def auth_google(
     user_data["finger_print"] = finger_print
 
     access_token, access_payload = create_access_token(user_data=user_data)
-    
+
     refresh_token, jti, payload = create_refresh_token(
         user_data=user_data, expiry=REFRESH_TOKEN_EXPIRY, refresh=True
     )
     await store_refresh_token(user_uid=jti, value=payload, finger_print=finger_print)
-    await store_access_token(user_uid=jti, value=access_payload, finger_print=finger_print)
+    await store_access_token(
+        user_uid=jti, value=access_payload, finger_print=finger_print
+    )
 
     frontend_url = (settings.FRONTEND_URL or "http://localhost:3000").rstrip("/")
     response = RedirectResponse(
-        url=f"{frontend_url}/dashboard"
-        if not (is_new_user and carried_role not in {"client", "agent"})
-        else f"{frontend_url}/complete-profile?needs_role=1"
+        url=(
+            f"{frontend_url}/dashboard"
+            if not (is_new_user and carried_role not in {"client", "agent"})
+            else f"{frontend_url}/complete-profile?needs_role=1"
+        )
     )
 
     max_age = 60 * 60 * 24 * 30 if remember_me else 60 * 60 * 24
@@ -439,9 +469,7 @@ async def reset_user_password(
 ):
     user = await auth_service.get_email_user(email=email, session=session)
     if user is None:
-        raise HTTPException(
-            status_code=404, detail="User not found try signing up"
-        )
+        raise HTTPException(status_code=404, detail="User not found try signing up")
     token_data = {"email": email}
     username = user.fullname
     safe_token = create_url_safe_token(token_data)
@@ -470,7 +498,7 @@ async def password_reset_form(
         raise UserNotFound()
 
     home_link = str(request.url_for("swagger_ui_html"))
-    form_link = f"http://127.0.0.1:8000/api/v1.0/auth/password_reset?token={token}"  # Reason i did this is because url_for() was giving me a no routes found with name error so i just hardcoded it
+    form_link = f"https://housifyapp.duckdns.org/api/v1.0/auth/password_reset?token={token}"  # Reason i did this is because url_for() was giving me a no routes found with name error so i just hardcoded it
     return template.TemplateResponse(
         request=request,
         name="reset_password_form.html",
@@ -512,10 +540,13 @@ async def verify_password_reset(
 
 
 @auth_router.delete("/delete_account")
-async def delete_user_account(user: UserDataModel = Depends(get_this_user), session: AsyncSession = Depends(get_session)):
+async def delete_user_account(
+    user: UserDataModel = Depends(get_this_user),
+    session: AsyncSession = Depends(get_session),
+):
     uid = user.uid
     delete_user = await auth_service.delete_user_uid(uid=uid, session=session)
     if delete_user == False:
         raise UserNotFound()
-    
+
     return Response(status_code=status.HTTP_204_NO_CONTENT)
