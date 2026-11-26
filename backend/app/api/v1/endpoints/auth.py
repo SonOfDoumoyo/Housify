@@ -405,26 +405,6 @@ async def auth_google(
 
     frontend_url = (settings.FRONTEND_URL or "http://localhost:3000").rstrip("/")
     max_age = 60 * 60 * 24 * 30 if remember_me else 60 * 60 * 24
-    response_.set_cookie(
-        key=f"refresh_token",
-        value=refresh_token,
-        httponly=True,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
-        path="/",
-        domain=settings.COOKIE_DOMAIN,
-        max_age=max_age,
-    )
-
-    response_.set_cookie(
-        key=f"access_token",
-        value=access_token,
-        httponly=True,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
-        path="/",
-        domain=settings.COOKIE_DOMAIN,
-    )
     response = RedirectResponse(
         url=(
             f"{frontend_url}/dashboard"
@@ -432,7 +412,25 @@ async def auth_google(
             else f"{frontend_url}/complete-profile?needs_role=1"
         )
     )
-    
+
+    response.set_cookie(
+        key=f"refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+        max_age=max_age,
+    )
+
+    response.set_cookie(
+        key=f"access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        path="/",
+    )
     return response
 
 
