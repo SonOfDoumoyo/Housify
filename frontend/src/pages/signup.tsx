@@ -154,11 +154,13 @@ export default function SignUp() {
   const handleCreateAccount = async (): Promise<boolean> => {
     setSubmitting(true);
     try {
-      await api.post(`/auth/signup/`, signUpData);
+      await api.post(`/auth/signup`, signUpData);
       return true;
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const detail = err.response?.data?.detail || err.response?.data?.message;
+        console.log(detail)
+        console.log(err.response.data)
         setError(typeof err.response?.data === "string" ? err.response.data : detail || "Sign up failed. Please try again.");
       } else {
         setError("Server not reachable. Please check your connection and try again.");
