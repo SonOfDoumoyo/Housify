@@ -67,7 +67,7 @@ class AccessTokenBearer:
         stored_value = await get_access_token(user_uid=uid, finger_print=finger_print)
         if stored_value is None:
             raise ExpiredToken()
-        stored_token = json.loads(stored_value.decode("utf-8"))
+        stored_token = json.loads(stored_value)
         
         if stored_token != token_data:
             raise RevokedToken()
@@ -105,7 +105,7 @@ class RefreshTokenBearer(HTTPBearer):
         stored_value = await get_refresh_token(user_uid=uid, finger_print=finger_print)
         if stored_value is None:
             raise ExpiredToken()
-        stored_token = json.loads(stored_value.decode("utf-8"))
+        stored_token = json.loads(stored_value)
         
         if stored_token != token_data:
             raise RevokedToken()
