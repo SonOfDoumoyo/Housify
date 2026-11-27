@@ -12,8 +12,8 @@ config = ConnectionConfig(
     MAIL_USERNAME=settings.MAIL_USERNAME,
     MAIL_PASSWORD=settings.MAIL_PASSWORD,
     MAIL_FROM_NAME=settings.MAIL_FROM_NAME,
-    MAIL_SSL_TLS=False,
-    MAIL_STARTTLS=True,
+    MAIL_SSL_TLS=True,
+    MAIL_STARTTLS=False,
     TEMPLATE_FOLDER=template_path,
     VALIDATE_CERTS=False,
 )
