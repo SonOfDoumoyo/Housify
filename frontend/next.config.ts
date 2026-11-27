@@ -6,8 +6,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/:path*",
-        destination:"https://housifyapp.duckdns.org/api/:path*"
+        source: "/api/v1.0/:path*",
+        destination:"https://housifyapp.duckdns.org/api/v1.0/:path*"
       }
     ]
   }
