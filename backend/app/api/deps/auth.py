@@ -45,6 +45,7 @@ class AccessTokenBearer:
     async def __call__(self, request: Request) -> Dict[str, Any]:
         print("ENTERED ACCESS ENDPOINT")
         token = request.cookies.get("access_token")
+        print(f"ACCESS TOKEN: {token}",flush=True)
         if not token:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,

@@ -86,10 +86,9 @@ async def refresh_access_token(
         key=f"access_token",
         value=new_access_token,
         httponly=True,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
+        secure=True,
+        samesite='lax',
         path="/",
-        domain=settings.COOKIE_DOMAIN,
     )
 
     return response
@@ -114,18 +113,16 @@ async def log_out(
     response.delete_cookie(
         key="access_token",
         httponly=True,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
+        secure=True,
+        samesite='lax',
         path="/",
-        domain=settings.COOKIE_DOMAIN,
     )
     response.delete_cookie(
         key="refresh_token",
         httponly=True,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
+        secure=True,
+        samesite='lax',
         path="/",
-        domain=settings.COOKIE_DOMAIN,
     )
 
     return response
@@ -195,10 +192,9 @@ async def login(
         key=f"refresh_token",
         value=refresh_token,
         httponly=True,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
+        secure=True,
+        samesite='lax',
         path="/",
-        domain=settings.COOKIE_DOMAIN,
         max_age=max_age,
     )
 
@@ -206,8 +202,8 @@ async def login(
         key=f"access_token",
         value=access_token,
         httponly=True,
-        secure=settings.COOKIE_SECURE,
-        samesite=settings.COOKIE_SAMESITE,
+        secure=True,
+        samesite='lax',
         path="/",
         domain=settings.COOKIE_DOMAIN,
     )
@@ -334,7 +330,7 @@ async def login_with_google(
     # back in the callback below.
     request.session["role"] = role if role in {"client", "agent"} else None
     request.session["flow"] = flow if flow in {"signup", "signin"} else None
-    redirect_url = "https://housifyapp.duckdns.org/api/v1.0/auth/google"  # Acts as a callback url for google to redirect to after successful authentication
+    redirect_url = "https://housifyapp.vercel.app/api/v1.0/auth/google"  # Acts as a callback url for google to redirect to after successful authentication
     # redirect_url = request.url_for(
     #     "auth_google"
     # )  # Acts as a callback url for google to redirect to after successful authentication
@@ -418,7 +414,7 @@ async def auth_google(
         value=refresh_token,
         httponly=True,
         secure=True,
-        samesite="none",
+        samesite="lax",
         path="/",
         max_age=max_age,
     )
@@ -428,7 +424,7 @@ async def auth_google(
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="none",
+        samesite="lax",
         path="/",
     )
     return response
